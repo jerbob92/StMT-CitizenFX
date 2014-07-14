@@ -20,31 +20,51 @@ function EventLoop:enable()
 end
 
 function EventLoop:disabled()
-   return if(self.is_active ~= true)
+   if(self.is_active ~= true) then
+       return true
+   end 
+   return false
 end
 
 function EventLoop:enabled()
-   return if(self.is_active == true)
+   if(self.is_active == true) then
+       return true
+   end 
+   return false
 end
 
 CreateThread(function()
+	-- Loop that runs forever in a separate thread
     while true do
         Wait(0)
-        for i = 0,table.getn(events) do
-		if(events[i].enabled())
-                    events[i].callback(events[i].args)
-                end
+        if(table.getn(events) > 0) then
+        	-- Loop through all the events
+        	for i = 0,(table.getn(events)-1) do
+        
+        		-- Only execute callbacks in enabled events
+				if(events[i].enabled()) then
+					-- Execute the callback
+           			events[i].callback(events[i].args)
+            	end
+        	end
         end
     end
 end)
 
-
 function addEventLoop(callback, ...)
+
+	-- Get the table size to generate a new ID
     local newEventLoopID = table.getn(events) + 1
+    
+  	-- Create a new loop callback with our arguments that are passed to the callback
     events[newEventLoopID] = EventLoop.create(callback, args)
     return newEventLoopID
 end
 
 function getEventLoop(id)
-    return events[newEventLoopID]
+
+	-- Returns EventLoop object at position `id`
+    return events[id]
 end
+
+export 'eventLoop'
