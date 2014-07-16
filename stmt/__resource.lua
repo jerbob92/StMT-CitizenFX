@@ -1,4 +1,11 @@
-description 'StMT Gamemode'
+description 'Steal the Money Truck Gamemode'
+
+resource_type 'gametype' { name = 'StMT' }
+
+dependencies {
+    "spawnmanager",
+    "mapmanager"
+}
 
 client_scripts {
     'client/eventloop.lua',
